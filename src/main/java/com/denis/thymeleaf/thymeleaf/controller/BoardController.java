@@ -4,6 +4,9 @@ import com.denis.thymeleaf.thymeleaf.model.Board;
 import com.denis.thymeleaf.thymeleaf.repository.BoardRepository;
 import com.denis.thymeleaf.thymeleaf.validator.BoardValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,9 +26,16 @@ public class BoardController {
     private BoardValidator boardValidator;
 
     @GetMapping("/list")
-    public String list(Model model){
+    public String list(Model model, @PageableDefault(size = 5) Pageable pageable){
 
-        List<Board> boardList = boardRepository.findAll();
+//        List<Board> boardList = boardRepository.findAll();
+//        Page<Board> boardList = boardRepository.findAll(PageRequest.of(0,20));
+        Page<Board> boardList = boardRepository.findAll(pageable);
+        int startPage = Math.max(1, boardList.getPageable().getPageNumber() -4);
+        int endPage   = Math.min(boardList.getTotalPages(), boardList.getPageable().getPageNumber() + 4);
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("boardList", boardList);
         return "board/list";
     }

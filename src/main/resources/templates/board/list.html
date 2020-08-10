@@ -40,7 +40,16 @@
         <!--<p class="lead">Spring Boot을 이용해 웹 페이지 제작<br>-->
             <!--Spring Security, JPA를 이용해 보안 설정과 데이터 다루기</p>-->
         <h2>게시판</h2>
-        <div>총 건수 : <span th:text="${#lists.size(boardList)}"></span></div>
+        <!--<div class="text-left">총 건수 : <span th:text="${#lists.size(boardList)}"></span></div>-->
+        <div class="text-left">총 건수 : <span th:text="${boardList.totalElements}"></span></div>
+        <form class="form-inline d-flex justify-content-end">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="saarchText" class="sr-only">검색</label>
+                <input type="text" class="form-control" id="saarchText" name="saarchText">
+            </div>
+            <button type="submit" class="btn btn-light mb-2">검색</button>
+        </form>
+
         <table class="table table-striped">
             <thead>
             <tr>
@@ -50,17 +59,30 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="boardList : ${boardList}">
-                <td th:text="${boardList.id}"></td>
-                <td><a th:text="${boardList.title}" th:href="@{/board/form(id=${boardList.id})}"></a></td>
-                <td>홍길동</td>
-            </tr>
+                <tr th:each="boardList : ${boardList}">
+                    <td th:text="${boardList.id}"></td>
+                    <td><a th:text="${boardList.title}" th:href="@{/board/form(id=${boardList.id})}"></a></td>
+                    <td>홍길동</td>
+                </tr>
             </tbody>
         </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${ 1 == boardList.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#" th:href="@{/board/list(page=${boardList.pageable.pageNumber  - 1})}" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item" th:classappend="${i == boardList.pageable.pageNumber + 1} ? 'disabled'"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a class="page-link" href="#" th:href="@{/board/list(page=${i - 1})}" th:text="${i}"></a>
+                </li>
+                <li class="page-item" th:classappend="${ boardList.totalPages == boardList.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#" th:href="@{/board/list(page=${boardList.pageable.pageNumber + 1})}">Next</a>
+                </li>
+            </ul>
+        </nav>
         <div class="text-right">
             <a type="botton" class="btn btn-primary" th:href="@{/board/form}">쓰기</a>
         </div>
-
     </div>
 
 </main>
