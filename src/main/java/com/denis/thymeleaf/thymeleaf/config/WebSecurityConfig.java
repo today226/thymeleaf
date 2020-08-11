@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
 //                .antMatchers("/", "/home").permitAll()
-                .antMatchers("/", "/css/**").permitAll()
+                .antMatchers("/", "/css/**", "/account/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -50,10 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .usersByUsernameQuery("SELECT USERNAME, PASSWORD, ENABLED "
                                     + "FROM USER "
                                     + "WHERE USERNAME = ?")
-                .authoritiesByUsernameQuery("SELECT USERNAME, NAME "
-                                          + "FROM USER_ROLE UR INNER JOIN USER U ON UR.USER_ID =  U.ID "
+                .authoritiesByUsernameQuery("SELECT U.USERNAME, R.NAME "
+                                          + "FROM USER_ROLE UR INNER JOIN USER U "
+                                          + "ON UR.USER_ID =  U.ID "
                                           + "INNER JOIN ROLE R ON UR.ROLE_ID = R.ID "
-                                          + "WHERE EMAIL = ?");
+                                          + "WHERE U.USERNAME = ?");
     }
 
     //Authentication 로그인
@@ -67,6 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 
